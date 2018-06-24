@@ -79,8 +79,40 @@
     _photoImageNode.delegate = self;
     _photoImageNode.URL      = photo.URL;
     _photoImageNode.layerBacked = YES;
+
+    // Examples how to get rounded corners / round the photo image node
+//    CGFloat cornerRadius = 20.0;
     
-    _userNameLabel                  = [[ASTextNode alloc] init];
+    // Use not recommended CALayer rounding corners mechanism: _photoImageNode.cornerRoundingType = ASCornerRoundingTypeDefaultSlowCALayer
+//    _photoImageNode.cornerRadius = cornerRadius;
+
+    // Use precomposition for rounding corners
+//    _photoImageNode.cornerRoundingType = ASCornerRoundingTypePrecomposited;
+//    _photoImageNode.cornerRadius = cornerRadius;
+
+    // Use clipping for rounding corners
+//    _photoImageNode.cornerRoundingType = ASCornerRoundingTypeClipping;
+//    _photoImageNode.backgroundColor = [UIColor whiteColor];
+//    _photoImageNode.cornerRadius = cornerRadius;
+
+    // Use willDisplayNodeContentWithRenderingContext to set a clipping path for the content for rounding corners
+    // Use the sceen scale for corner radius to respect content scale
+//    CGFloat screenScale = UIScreen.mainScreen.scale;
+//    _photoImageNode.willDisplayNodeContentWithRenderingContext = ^(CGContextRef context, id drawParameters) {
+//      CGRect bounds = CGContextGetClipBoundingBox(context);
+//      UIImage *overlay = [UIImage as_resizableRoundedImageWithCornerRadius:cornerRadius * screenScale
+//                                                               cornerColor:[UIColor clearColor]
+//                                                                 fillColor:[UIColor clearColor]];
+//      [overlay drawInRect:bounds];
+//      [[UIBezierPath bezierPathWithRoundedRect:bounds cornerRadius:cornerRadius * screenScale] addClip];
+//    };
+
+    // Example how to use ASImageNode extras to round the image and add a border. E.g. great for using with avatar
+    // images
+//    _photoImageNode.imageModificationBlock = ASImageNodeRoundBorderModificationBlock(5.0, [UIColor orangeColor]);
+   
+    
+    _userNameLabel                = [[ASTextNode alloc] init];
     _userNameLabel.attributedText = [photo.ownerUserProfile usernameAttributedStringWithFontSize:FONT_SIZE];
     
     _photoLocationLabel      = [[ASTextNode alloc] init];

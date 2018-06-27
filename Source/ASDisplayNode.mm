@@ -1628,10 +1628,9 @@ void recursivelyTriggerDisplayForLayer(CALayer *layer, BOOL shouldBlock)
       CGContextEOFillPath(context);
 
       // No lock needed, as _clipCornerLayers is only modified on the main thread.
-      CALayer *clipCornerLayer = self->_clipCornerLayers[idx];
-      clipCornerLayer.contents = (id)(ASGraphicsGetImageAndEndCurrentContext().CGImage);
-      clipCornerLayer.bounds = CGRectMake(0.0, 0.0, size.width, size.height);
-      clipCornerLayer.anchorPoint = CGPointMake(isRight ? 1.0 : 0.0, isTop ? 1.0 : 0.0);
+      self->_clipCornerLayers[idx].contents = (id)(ASGraphicsGetImageAndEndCurrentContext().CGImage);
+      self->_clipCornerLayers[idx].bounds = CGRectMake(0.0, 0.0, size.width, size.height);
+      self->_clipCornerLayers[idx].anchorPoint = CGPointMake(isRight ? 1.0 : 0.0, isTop ? 1.0 : 0.0);
       
       CGPathRelease(addedPath);
       CGPathRelease(roundedPath);
@@ -1644,20 +1643,19 @@ void recursivelyTriggerDisplayForLayer(CALayer *layer, BOOL shouldBlock)
 {
   ASPerformBlockOnMainThread(^{
     ASDisplayNodeAssertMainThread();
-    auto clipCornerLayers = self->_clipCornerLayers;
     if (visible) {
       for (int idx = 0; idx < 4; idx++) {
-        if (clipCornerLayers[idx] == nil) {
-          clipCornerLayers[idx] = [[CALayer alloc] init];
-          clipCornerLayers[idx].zPosition = 99999;
-          clipCornerLayers[idx].delegate = self;
+        if (self->_clipCornerLayers[idx] == nil) {
+          self->_clipCornerLayers[idx] = [[CALayer alloc] init];
+          self->_clipCornerLayers[idx].zPosition = 99999;
+          self->_clipCornerLayers[idx].delegate = self;
         }
       }
       [self _updateClipCornerLayerContentsWithRadius:self->_cornerRadius backgroundColor:self.backgroundColor];
     } else {
       for (int idx = 0; idx < 4; idx++) {
-        [clipCornerLayers[idx] removeFromSuperlayer];
-        clipCornerLayers[idx] = nil;
+        [self->_clipCornerLayers[idx] removeFromSuperlayer];
+        self->_clipCornerLayers[idx] = nil;
       }
     }
   });

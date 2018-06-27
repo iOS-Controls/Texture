@@ -113,12 +113,12 @@
       CGContextTranslateCTM(context, frame.origin.x, frame.origin.y);
 
       // Support cornerRadius
-      CGPathRef cornerRadiusPath = NULL;
       if (rasterizingFromAscendent && clipsToBounds) {
         if (cornerRadius) {
-          cornerRadiusPath = ASCGRoundedPathCreate(bounds, cornerRadius);
+          CGPathRef cornerRadiusPath = ASCGRoundedPathCreate(bounds, cornerRadius);
           CGContextAddPath(context, cornerRadiusPath);
           CGContextClip(context);
+          CGPathRelease(cornerRadiusPath);
         } else {
           CGContextClipToRect(context, bounds);
         }
@@ -139,10 +139,6 @@
           CGBlendMode blendMode = opaque ? kCGBlendModeCopy : kCGBlendModeNormal;
           [image drawInRect:bounds blendMode:blendMode alpha:1];
         }
-      }
-      
-      if (cornerRadiusPath) {
-        CGPathRelease(cornerRadiusPath);
       }
     };
     [displayBlocks addObject:pushAndDisplayBlock];

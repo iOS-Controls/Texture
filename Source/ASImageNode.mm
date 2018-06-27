@@ -770,8 +770,6 @@ asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat
       CGFloat strokeThickness = borderWidth;
       CGFloat strokeInset = floor((strokeThickness + 1.0f) / 2.0f) - 1.0f;
       CGPathRef path = CGPathCreateWithEllipseInRect(CGRectInset(rect, strokeInset, strokeInset), NULL);
-//      CGMutablePathRef path = CGPathCreateMutable();
-//      CGPathAddEllipseInRect(path, NULL, CGRectInset(rect, strokeInset, strokeInset));
       CGContextAddPath(context, path);
       
       CGContextSetStrokeColorWithColor(context, borderColor.CGColor);

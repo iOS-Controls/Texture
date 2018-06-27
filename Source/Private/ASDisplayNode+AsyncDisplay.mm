@@ -131,13 +131,18 @@
         CGContextFillRect(context, bounds);
       }
 
-      // If there is a display block, call it to get the image, then copy the image into the current context (which is the rasterized container's backing store).
+      // If there is a display block, call it to get the image, then copy the image into the current context (which
+      // is the rasterized container's backing store).
       if (displayBlock) {
         UIImage *image = (UIImage *)displayBlock();
         if (image) {
           BOOL opaque = ASImageAlphaInfoIsOpaque(CGImageGetAlphaInfo(image.CGImage));
           CGBlendMode blendMode = opaque ? kCGBlendModeCopy : kCGBlendModeNormal;
-          [image drawInRect:bounds blendMode:blendMode alpha:1];
+          CGContextSetBlendMode(context, blendMode);
+          CGContextTranslateCTM(context, 0, CGRectGetMaxY(bounds) + CGRectGetMinY(bounds));
+          CGContextScaleCTM(context, 1, -1);
+          CGContextSetAlpha(context, 1.0);
+          CGContextDrawImage(context, bounds, image.CGImage);
         }
       }
     };

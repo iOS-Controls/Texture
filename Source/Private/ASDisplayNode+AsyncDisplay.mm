@@ -300,22 +300,18 @@
       ASDisplayNodeContextModifier willDisplayNodeContentWithRenderingContext = _willDisplayNodeContentWithRenderingContext;
     __instanceLock__.unlock();
 
-    CGPathRef cornerRadiusPath = NULL;
     if (cornerRoundingType == ASCornerRoundingTypePrecomposited && cornerRadius > 0.0) {
       ASDisplayNodeAssert(context == UIGraphicsGetCurrentContext(), @"context is expected to be pushed on UIGraphics stack %@", self);
       // TODO: This clip path should be removed if we are rasterizing.
       CGRect boundingBox = CGContextGetClipBoundingBox(context);
-      cornerRadiusPath = ASCGRoundedPathCreate(boundingBox, cornerRadius);
+      CGPathRef cornerRadiusPath = ASCGRoundedPathCreate(boundingBox, cornerRadius);
       CGContextAddPath(context, cornerRadiusPath);
       CGContextClip(context);
+      CGPathRelease(cornerRadiusPath);
     }
     
     if (willDisplayNodeContentWithRenderingContext) {
       willDisplayNodeContentWithRenderingContext(context, drawParameters);
-    }
-      
-    if (cornerRadiusPath) {
-      CGPathRelease(cornerRadiusPath);
     }
   }
 
@@ -368,7 +364,7 @@
     
     // Punch out the corners by copying the backgroundColor over them.
     // This works for everything from clearColor to opaque colors.
-     CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
     
     CGContextSetAlpha(context, 1.0);
     CGContextSetBlendMode(context, kCGBlendModeCopy);
@@ -379,8 +375,9 @@
     
     CGContextRestoreGState(context);
     
-    // Drawing the border has some problems currently. As if you the borderWidth is set it, the CALayer
-    // also picks up this value and draws the border, but without the cornerRadius.
+    // Drawing borders with ASCornerRoundingTypePrecomposited set has some problems at the moment. If the borderWidth is
+    // set, besides we are drawing the border with the given corner radius, the CALayer also picks up the borderWidth
+    // value and draws the border without the cornerRadius.
     if (borderWidth > 0.0f) {  // Don't create roundedPath and stroke if borderWidth is 0.0
       CGContextSaveGState(context);
       

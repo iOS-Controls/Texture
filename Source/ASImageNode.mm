@@ -748,11 +748,7 @@ asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat
     // Make the image round
     CGContextClip(context);
     
-    // Draw the original image with UIImage APIs as it already respects the
-    // CTM for iOS orientation & specified scale.
-//    [originalImage drawAtPoint:CGPointZero blendMode:kCGBlendModeCopy alpha:1];
-   
-    // Although drawAtPoint:blendMode: would consider the CTM alrady, we are using CGContext* functions for drawing
+    // Although drawAtPoint:blendMode: would consider the CTM already, we are using CGContext* functions for drawing
     // the image instead calling drawAtPoint:blendMode. This will save use 50% of retain calls for the image
     CGContextSetBlendMode(context, kCGBlendModeCopy);
     CGContextTranslateCTM(context, 0, CGRectGetMaxY(rect) + CGRectGetMinY(rect));

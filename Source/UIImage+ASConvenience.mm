@@ -117,9 +117,6 @@ UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollectio
   });
 
   // Treat clear background color as no background color
-  // clearColor is a singleton UIColor therefore we can replace the isEqual: call with pointer comparison as
-  // [UIColor isEqual:] does a bunch of things like checking isKindOfClass:, reading out the cachedcolor and
-  // ultimately just calls CGColorEqualToColor().
   if (CGColorGetAlpha(cornerColor.CGColor) == 0) {
     cornerColor = nil;
   }

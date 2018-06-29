@@ -480,8 +480,78 @@ are not overridden by a ASDisplayNode subclass */ \
   return [super __sel]; \
 } \
 
-IMPLEMENT_RESPONDER_METHOD(canBecomeFirstResponder, _ASDisplayViewMethodOverrideCanBecomeFirstResponder);
-IMPLEMENT_RESPONDER_METHOD(becomeFirstResponder, _ASDisplayViewMethodOverrideBecomeFirstResponder);
+
+// IMPLEMENT_RESPONDER_METHOD(canBecomeFirstResponder, _ASDisplayViewMethodOverrideCanBecomeFirstResponder);
+
+- (BOOL)canBecomeFirstResponder
+{
+  ASDisplayNode *node = _asyncdisplaykit_node; /* Create strong reference to weak ivar. */
+  SEL sel = @selector(canBecomeFirstResponder);
+  /* Prevent an infinite loop in here if [super canBecomeFirstResponder] was called on a
+  / _ASDisplayView subclass */
+  if (self->_methodOverrides & _ASDisplayViewMethodOverrideCanBecomeFirstResponder) {
+    /* Check if we can call through to ASDisplayNode subclass directly */
+    if (ASDisplayNodeSubclassOverridesSelector([node class], sel)) {
+      return [node canBecomeFirstResponder];
+    } else {
+    /* Call through to views superclass as we expect super was called from the
+      _ASDisplayView subclass and a node subclass does not overwrite canBecomeFirstResponder */
+      return [self __canBecomeFirstResponder];
+    }
+  } else {
+      if (ASDisplayNodeSubclassOverridesSelector([node class], sel)) {
+          return [node canBecomeFirstResponder];
+      } else {
+          /* Call through to internal node __canBecomeFirstResponder that will consider the view in responding */
+          return [node __canBecomeFirstResponder];
+          //            /* Call through to views superclass as we expect super was called from the
+          //             _ASDisplayView subclass and a node subclass does not overwrite canBecomeFirstResponder */
+          //            return [self __becomeFirstResponder];
+      }
+    /* Call through to internal node __canBecomeFirstResponder that will consider the view in responding */
+//    return [node __canBecomeFirstResponder];
+  }
+}
+
+- (BOOL)__canBecomeFirstResponder
+{
+    return [super canBecomeFirstResponder];
+}
+
+// IMPLEMENT_RESPONDER_METHOD(becomeFirstResponder, _ASDisplayViewMethodOverrideBecomeFirstResponder);
+- (BOOL)becomeFirstResponder
+{
+    ASDisplayNode *node = _asyncdisplaykit_node; /* Create strong reference to weak ivar. */
+    SEL sel = @selector(becomeFirstResponder);
+    /* Prevent an infinite loop in here if [super canBecomeFirstResponder] was called on a
+     / _ASDisplayView subclass */
+    if (self->_methodOverrides & _ASDisplayViewMethodOverrideCanBecomeFirstResponder) {
+        /* Check if we can call through to ASDisplayNode subclass directly */
+        if (ASDisplayNodeSubclassOverridesSelector([node class], sel)) {
+            return [node becomeFirstResponder];
+        } else {
+            /* Call through to views superclass as we expect super was called from the
+             _ASDisplayView subclass and a node subclass does not overwrite canBecomeFirstResponder */
+            return [self __becomeFirstResponder];
+        }
+    } else {
+        if (ASDisplayNodeSubclassOverridesSelector([node class], sel)) {
+            return [node becomeFirstResponder];
+        } else {
+            /* Call through to internal node __canBecomeFirstResponder that will consider the view in responding */
+            return [node __becomeFirstResponder];
+//            /* Call through to views superclass as we expect super was called from the
+//             _ASDisplayView subclass and a node subclass does not overwrite canBecomeFirstResponder */
+//            return [self __becomeFirstResponder];
+        }
+    }
+}
+
+- (BOOL)__becomeFirstResponder
+{
+    return [super becomeFirstResponder];
+}
+
 IMPLEMENT_RESPONDER_METHOD(canResignFirstResponder, _ASDisplayViewMethodOverrideCanResignFirstResponder);
 IMPLEMENT_RESPONDER_METHOD(resignFirstResponder, _ASDisplayViewMethodOverrideResignFirstResponder);
 IMPLEMENT_RESPONDER_METHOD(isFirstResponder, _ASDisplayViewMethodOverrideIsFirstResponder);
